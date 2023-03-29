@@ -5,12 +5,14 @@ import java.awt.*;
 import javax.swing.*;
 import java.util.*;
 import java.sql.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 public class EmployeeApp {
 
     static JFrame frame;
     static JTable table;
-    static String [] [] temp;
+    static String [][] temp;
     static ResultSet rs;
     static ArrayList<Employee> rowData = new ArrayList<Employee>();
      
@@ -65,12 +67,43 @@ public class EmployeeApp {
         String [] columnTitle = {"ID", "Last Name", "First Name", "Address 1", "Address 2", "City", "State", "DOB", "Salary"};
         
         table = new JTable(temp, columnTitle);
-        frame.add(table);
+        table.getColumnModel().getColumn(0).setPreferredWidth(25);
+        table.getColumnModel().getColumn(1).setPreferredWidth(75);
+        table.getColumnModel().getColumn(2).setPreferredWidth(75);
+        table.getColumnModel().getColumn(3).setPreferredWidth(150);
+        table.getColumnModel().getColumn(6).setPreferredWidth(25);
+        table.getColumnModel().getColumn(7).setPreferredWidth(80);
+        table.setRowSelectionAllowed(true); // by default is true
+        ListSelectionModel rowSelectionModel = table.getSelectionModel();
+        rowSelectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        rowSelectionModel.addListSelectionListener(new MyEventHandler());
+        frame.add(new JScrollPane(table));
         frame.setVisible(true);
-        
-        
-       
-        
-    }
+          
+     }
     
+    
+    static class MyEventHandler implements ListSelectionListener{
+
+        @Override
+        public void valueChanged(ListSelectionEvent e) {
+            int[] selectedRow = table.getSelectedRows();
+            String id = "",ln = "",fn = "",city = "";
+          //  for (int i = 0; i<selectedRow.length; i++){
+                id = (String)(table.getValueAt(selectedRow[0], 0));
+                ln = (String)(table.getValueAt(selectedRow[0], 1));
+                fn = (String)(table.getValueAt(selectedRow[0], 2));
+         //       city = (String)(table.getValueAt(selectedRow[i], 5));
+          //  }
+            StringBuilder sb = new StringBuilder();
+            sb.append("Employee Info\n");
+            sb.append("=============\n");
+            sb.append("Employee ID : "+id + "\n");
+            sb.append("Employee Last Name : "+ln + "\n");
+            sb.append("Employee First Name : "+fn + "\n");
+            sb.append("Employee City : "+city + "\n");
+           JOptionPane.showMessageDialog(frame, "ID =  "+sb.toString() , "Record Selected", JOptionPane.INFORMATION_MESSAGE);
+        }
+    
+    }
 }
